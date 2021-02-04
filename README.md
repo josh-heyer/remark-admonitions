@@ -1,3 +1,19 @@
+ ## How this differs from Elvis Wolcott's original 
+ 
+ The primary goal is reasonable compatibility with content written against Python-Markdown's Admonitions plugin: https://squidfunk.github.io/mkdocs-material/reference/admonitions/
+ 
+ That means:
+ 
+ - Allows indented, rather than fenced, admonitions (both are supported, and can both be used in the same document if desired)
+ - An optional space between the tag and the keyword
+ - Case-insensitive keyword matching
+ - Quoted titles (poorly-supported right now - just strips containing quotes, if any)
+ - Empty titles ("" results in no title at all, vs. a default title)
+ 
+ Original README follows:
+ 
+ ---
+
 [![Travis (.com)](https://img.shields.io/travis/com/elviswolcott/remark-admonitions?logo=travis)](https://travis-ci.com/elviswolcott/remark-admonitions)
 [![npm](https://img.shields.io/npm/v/remark-admonitions?label=remark-admonitions&logo=npm)](https://www.npmjs.com/package/remark-admonitions)
 # remark-admonitions
