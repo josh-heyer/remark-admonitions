@@ -66,5 +66,105 @@
         <p>You can make your own custom types. The icon, keyword, and emoji can be set in the plugin options and they can be styled separately.</p>
       </div>
     </div>
+    <div class="admonition admonition-note alert alert--secondary">
+      <div class="admonition-heading">
+        <h5><span class="admonition-icon">ℹ️</span>with a title</h5>
+      </div>
+      <div class="admonition-content"></div>
+    </div>
+    <div class="admonition admonition-note alert alert--secondary">
+      <div class="admonition-heading">
+        <h5><span class="admonition-icon">ℹ️</span>with a quoted title</h5>
+      </div>
+      <div class="admonition-content"></div>
+    </div>
+    <div class="admonition admonition-note alert alert--secondary">
+      <div class="admonition-heading">
+        <h5><span class="admonition-icon">ℹ️</span>Note</h5>
+      </div>
+      <div class="admonition-content">
+        <p>with a default title</p>
+      </div>
+    </div>
+    <div class="admonition admonition-note alert alert--secondary">
+      <div class="admonition-heading">
+        <h5><span class="admonition-icon">ℹ️</span></h5>
+      </div>
+      <div class="admonition-content">
+        <p>without any title</p>
+      </div>
+    </div>
+    <div class="admonition admonition-important alert alert--info">
+      <div class="admonition-heading">
+        <h5><span class="admonition-icon">❗️</span>IMPORTANT TITLE HERE</h5>
+      </div>
+      <div class="admonition-content">
+        <p>You can have <a href="www.google.com">markdown</a> in here, neat</p>
+      </div>
+    </div>
+    <ol>
+      <li>
+        <p>A list</p>
+      </li>
+      <li>
+        <p>With items</p>
+        <blockquote>
+          <div class="admonition admonition-tip alert alert--success">
+            <div class="admonition-heading">
+              <h5><span class="admonition-icon">💡</span>TIP TITLE HERE</h5>
+            </div>
+            <div class="admonition-content">
+              <p>You can have <a href="www.google.com">markdown</a> in here, neat</p>
+              <pre><code> including fenced code
+</code></pre>
+            </div>
+          </div>
+        </blockquote>
+      </li>
+      <li>
+        <p>And stuff</p>
+      </li>
+    </ol>
+    <div class="admonition admonition-note alert alert--secondary">
+      <div class="admonition-heading">
+        <h5><span class="admonition-icon">ℹ️</span>NOTE TITLE HERE</h5>
+      </div>
+      <div class="admonition-content">
+        <p>You can have <a href="www.google.com">markdown</a> in here, neat</p>
+      </div>
+    </div>
+    <div class="admonition admonition-warning alert alert--danger">
+      <div class="admonition-heading">
+        <h5><span class="admonition-icon">🔥</span></h5>
+      </div>
+      <div class="admonition-content">
+        <p>You can have <a href="www.google.com">markdown</a> in here, neat</p>
+      </div>
+    </div>
+    <div class="admonition admonition-danger alert alert--danger">
+      <div class="admonition-heading">
+        <h5><span class="admonition-icon">🔥</span>Indented code block in fenced admonition</h5>
+      </div>
+      <div class="admonition-content">
+        <pre><code>You can have [markdown](www.google.com) in here, neat
+</code></pre>
+      </div>
+    </div>
+    <div class="admonition admonition-note alert alert--secondary">
+      <div class="admonition-heading">
+        <h5><span class="admonition-icon">ℹ️</span>How about... Admonition within an admonition?</h5>
+      </div>
+      <div class="admonition-content">
+        <p>Blah blah blah</p>
+        <div class="admonition admonition-danger alert alert--danger">
+          <div class="admonition-heading">
+            <h5><span class="admonition-icon">🔥</span>Danger</h5>
+          </div>
+          <div class="admonition-content">
+            <p>Whoa!</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
