@@ -34,24 +34,25 @@
   "dependencies": {
     "rehype-parse": "^6.0.2",
     "unified": "^8.4.2",
-    "unist-util-visit": "^2.0.1"
+    "unist-util-visit": "^2.0.3"
   },
   "devDependencies": {
     "colors": "^1.4.0",
     "compiler": "^0.1.2",
-    "diff": "^4.0.1",
+    "diff": "^4.0.2",
     "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.9.0",
-    "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-prettier": "^3.1.2",
-    "husky": "^4.0.6",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.3.1",
+    "husky": "^4.3.8",
     "prettier": "^1.19.1",
     "rehype-document": "^3.2.1",
-    "rehype-format": "^3.0.0",
+    "rehype-format": "^3.1.0",
     "rehype-stringify": "^6.0.1",
     "remark-parse": "^7.0.2",
     "remark-rehype": "^5.0.0",
-    "to-vfile": "^6.0.0",
-    "vfile-reporter": "^6.0.0"
+    "remark-stringify": "^8.0.1",
+    "to-vfile": "^6.1.0",
+    "vfile-reporter": "^6.0.2"
   }
 }

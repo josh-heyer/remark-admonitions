@@ -1,5 +1,6 @@
 const unified = require("unified");
 const markdown = require("remark-parse");
+const toMarkdown = require("remark-stringify");
 const plugin = require("../lib");
 const remark2rehype = require("remark-rehype");
 const doc = require("rehype-document");
@@ -76,6 +77,57 @@ const test = (options, filename) => {
     });
 };
 
+const testAst = (options, filename) => {
+  const ast = unified()
+    .use(markdown)
+    .use(plugin, options)
+    .parse(vfile.readSync("./test/sample.md"));
+
+  const result = JSON.stringify(ast, null, 2);
+  vfile.writeSync({ path: `./test/${filename}.json`, contents: result });
+  const ref = vfile.readSync(`./test/${filename}.ref.json`);
+  const { same, pretty } = diffVfile(result, ref);
+  if (same) {
+    console.log(
+      `${colors.red("Files do not match")} for ${filename} AST test.`
+    );
+    console.log(pretty);
+    exit = 2;
+  } else {
+    console.log(`${colors.green("Files match")} for ${filename} AST test.`);
+  }
+};
+
+const testMd = (options, filename) => {
+  unified()
+    .use(markdown)
+    .use(toMarkdown)
+    .use(plugin, options)
+    .process(vfile.readSync("./test/sample.md"), (error, result) => {
+      console.error(report(error || result));
+      if (error) {
+        throw error;
+      }
+      if (result) {
+        result.basename = `${filename}.md`;
+        vfile.writeSync(result);
+        const ref = vfile.readSync(`./test/${filename}.ref.md`);
+        const { same, pretty } = diffVfile(result, ref);
+        if (same) {
+          console.log(
+            `${colors.red("Files do not match")} for ${filename} MD test.`
+          );
+          console.log(pretty);
+          exit = 2;
+        } else {
+          console.log(
+            `${colors.green("Files match")} for ${filename} MD test.`
+          );
+        }
+      }
+    });
+};
+
 const pluginOptions = {
   customTypes: {
     custom: {
@@ -89,5 +141,13 @@ const pluginOptions = {
 test(pluginOptions, "svg");
 test({ ...pluginOptions, icons: "emoji" }, "emoji");
 test({ ...pluginOptions, icons: "none" }, "none");
+
+testAst(pluginOptions, "svg");
+testAst({ ...pluginOptions, icons: "emoji" }, "emoji");
+testAst({ ...pluginOptions, icons: "none" }, "none");
+
+testMd(pluginOptions, "svg");
+testMd({ ...pluginOptions, icons: "emoji" }, "emoji");
+testMd({ ...pluginOptions, icons: "none" }, "none");
 
 process.exit(exit);
