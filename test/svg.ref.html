@@ -78,6 +78,7 @@
         <p>You can make your own custom types. The icon, keyword, and emoji can be set in the plugin options and they can be styled separately.</p>
       </div>
     </div>
+    <h2>Indented</h2>
     <div class="admonition admonition-note alert alert--secondary">
       <div class="admonition-heading">
         <h5><span class="admonition-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16">
@@ -200,5 +201,44 @@
         </div>
       </div>
     </div>
+    <h2>Escaping</h2>
+    <div class="admonition admonition-important alert alert--info">
+      <div class="admonition-heading">
+        <h5><span class="admonition-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16">
+              <path fill-rule="evenodd" d="M7 2.3c3.14 0 5.7 2.56 5.7 5.7s-2.56 5.7-5.7 5.7A5.71 5.71 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zM7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm1 3H6v5h2V4zm0 6H6v2h2v-2z"></path>
+            </svg></span>Escaping the tag allows you to change the behavior</h5>
+      </div>
+      <div class="admonition-content">
+        <p>This could be code or a paragraph depending whether a backslash precedes the tag</p>
+      </div>
+    </div>
+    <p>:::</p>
+    <p>
+      ::: note this is not a note
+      it's something else - note also that this doesn't need to be escaped ::: because the parser won't recognize it. Escaping it does no harm though!
+    </p>
+    <p>The same goes for code blocks:</p>
+    <pre><code>::: note that this isn't a note, it's a code block
+neither the start nor end tag needs to be escaped
+as code blocks have precedence in the parser
+this is important, as normally we would not want to
+have to escape anything within a code block
+::: 
+</code></pre>
+    <ul>
+      <li>This is a list</li>
+      <li>
+        ::: note that notes need to be escaped here
+        otherwise, things will break
+      </li>
+    </ul>
+    <blockquote>
+      <p>
+        when in doubt,
+        it doesn't hurt to escape
+        ::: note s or other admonitions
+        it won't hurt anything
+      </p>
+    </blockquote>
   </body>
 </html>

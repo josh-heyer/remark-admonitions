@@ -1,6 +1,4 @@
 const unified = require("unified");
-const markdown = require("remark-parse");
-const toMarkdown = require("remark-stringify");
 const plugin = require("../lib");
 const remark2rehype = require("remark-rehype");
 const doc = require("rehype-document");
@@ -11,7 +9,17 @@ const report = require("vfile-reporter");
 const diff = require("diff");
 const colors = require("colors/safe");
 
-let exit = 0;
+const remarkVersions = {
+  "12": {
+    toMarkdown: require("remark-stringify"),
+    markdown: require("remark-parse"),
+  },/*
+  "13": {
+    toMarkdown: require("remark13-remark-stringify"),
+    markdown: require("remark13-remark-parse"),
+  },*/
+};
+
 // naive diff, works fine for short files
 const diffVfile = (a, b) => {
   if (a.toString() !== b.toString()) {
@@ -21,21 +29,24 @@ const diffVfile = (a, b) => {
         let text = group.value;
         if (group.added) {
           return text
-            .trim()
+            .trimEnd()
             .split("\n")
             .map(line => `+ |${colors.green(line)}`)
             .join("\n");
         } else if (group.removed) {
           return text
-            .trim()
+            .trimEnd()
             .split("\n")
             .map(line => `- |${colors.red(line)}`)
             .join("\n");
         } else {
           return text
-            .trim()
+            .trimEnd()
             .split("\n")
-            .map(line => `  |${line}`)
+            .map( (line, index, array) => index === 2 && index <= array.length-3
+              ? `...${array.length-4} more unchanged lines...`
+              : `  |${line}`)
+            .filter( (line, index, array) => index < 3 || index > array.length-3 )
             .join("\n");
         }
       })
@@ -46,15 +57,9 @@ const diffVfile = (a, b) => {
   }
 };
 
-const test = (options, filename) => {
-  unified()
-    .use(markdown)
-    .use(plugin, options)
-    .use(remark2rehype)
-    .use(doc)
-    .use(format)
-    .use(html)
-    .process(vfile.readSync("./test/sample.md"), (error, result) => {
+const testHtml = (processor, filename) => {
+    let success = true;
+    processor.process(vfile.readSync("./test/sample.md"), (error, result) => {
       console.error(report(error || result));
       if (error) {
         throw error;
@@ -62,26 +67,25 @@ const test = (options, filename) => {
       if (result) {
         result.basename = `${filename}.html`;
         vfile.writeSync(result);
-        const ref = vfile.readSync(`./test/${filename}.ref`);
+        const ref = vfile.readSync(`./test/${filename}.ref.html`);
         const { same, pretty } = diffVfile(result, ref);
         if (same) {
           console.log(
             `${colors.red("Files do not match")} for ${filename} test.`
           );
           console.log(pretty);
-          exit = 2;
+          success = false;
         } else {
           console.log(`${colors.green("Files match")} for ${filename} test.`);
         }
       }
     });
+    return success;
 };
 
-const testAst = (options, filename) => {
-  const ast = unified()
-    .use(markdown)
-    .use(plugin, options)
-    .parse(vfile.readSync("./test/sample.md"));
+const testAst = (processor, filename) => {
+  let success = true;
+  const ast = processor.parse(vfile.readSync("./test/sample.md"));
 
   const result = JSON.stringify(ast, null, 2);
   vfile.writeSync({ path: `./test/${filename}.json`, contents: result });
@@ -92,18 +96,16 @@ const testAst = (options, filename) => {
       `${colors.red("Files do not match")} for ${filename} AST test.`
     );
     console.log(pretty);
-    exit = 2;
+    success = false;
   } else {
     console.log(`${colors.green("Files match")} for ${filename} AST test.`);
   }
+  return success;
 };
 
-const testMd = (options, filename) => {
-  unified()
-    .use(markdown)
-    .use(toMarkdown)
-    .use(plugin, options)
-    .process(vfile.readSync("./test/sample.md"), (error, result) => {
+const testMd = (processor, filename) => {
+  let success = true;
+  processor.process(vfile.readSync("./test/sample.md"), (error, result) => {
       console.error(report(error || result));
       if (error) {
         throw error;
@@ -118,7 +120,7 @@ const testMd = (options, filename) => {
             `${colors.red("Files do not match")} for ${filename} MD test.`
           );
           console.log(pretty);
-          exit = 2;
+          success = false;
         } else {
           console.log(
             `${colors.green("Files match")} for ${filename} MD test.`
@@ -126,6 +128,25 @@ const testMd = (options, filename) => {
         }
       }
     });
+    return success;
+};
+
+
+const getProcessor = (options, remarkVersion, toHtml) =>
+{
+  if (toHtml)
+    return unified()
+      .use(remarkVersion.markdown)
+      .use(plugin, options)
+      .use(remark2rehype)
+      .use(doc)
+      .use(format)
+      .use(html);
+
+  return unified()
+    .use(remarkVersion.markdown)
+    .use(remarkVersion.toMarkdown)
+    .use(plugin, options);
 };
 
 const pluginOptions = {
@@ -138,16 +159,23 @@ const pluginOptions = {
   }
 };
 
-test(pluginOptions, "svg");
-test({ ...pluginOptions, icons: "emoji" }, "emoji");
-test({ ...pluginOptions, icons: "none" }, "none");
+const iconModes = ["svg", "emoji", "none"];
 
-testAst(pluginOptions, "svg");
-testAst({ ...pluginOptions, icons: "emoji" }, "emoji");
-testAst({ ...pluginOptions, icons: "none" }, "none");
+let issues = [];
+for (let version of Object.getOwnPropertyNames(remarkVersions))
+{
+  const remark = remarkVersions[version];
+  for (let icons of iconModes)
+  {
+    if (!testHtml(getProcessor({ ...pluginOptions, icons}, remark, true), icons))
+      issues.push(`HTML generation test failed for remark ${version} with ${icons} icons`)
+    if (!testAst(getProcessor({ ...pluginOptions, icons}, remark, false), icons))
+      issues.push(`AST generation test failed for remark ${version} with ${icons} icons`)
+    if (!testMd(getProcessor({ ...pluginOptions, icons}, remark, false), icons))
+      issues.push(`Markdown generation test failed for remark ${version} with ${icons} icons`)
+  }
+}
 
-testMd(pluginOptions, "svg");
-testMd({ ...pluginOptions, icons: "emoji" }, "emoji");
-testMd({ ...pluginOptions, icons: "none" }, "none");
+console.log(issues.join("\n"));
 
-process.exit(exit);
+process.exit(issues.length ? 2 : 0);

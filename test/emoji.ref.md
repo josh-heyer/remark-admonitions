@@ -37,6 +37,8 @@ You can't nest them
 You can make your own custom types. The icon, keyword, and emoji can be set in the plugin options and they can be styled separately.
 :::
 
+## Indented
+
 ::: Note with a title
 
 
@@ -79,3 +81,31 @@ You can have [markdown](www.google.com) in here, neat
 
     ::: Danger
         Whoa!
+
+## Escaping
+
+::: important Escaping the tag allows you to change the behavior
+    This could be code or a paragraph depending whether a backslash precedes the tag
+
+\:::
+
+\::: note this is not a note
+    it's something else - note also that this doesn't need to be escaped ::: because the parser won't recognize it. Escaping it does no harm though!
+
+The same goes for code blocks:
+
+    ::: note that this isn't a note, it's a code block
+    neither the start nor end tag needs to be escaped
+    as code blocks have precedence in the parser
+    this is important, as normally we would not want to
+    have to escape anything within a code block
+    ::: 
+
+-   This is a list
+-   \::: note that notes need to be escaped here
+         otherwise, things will break
+
+> when in doubt,
+> it doesn't hurt to escape
+> \::: note s or other admonitions
+> it won't hurt anything

@@ -2,5 +2,8 @@
 node_modules
 # files generated during testing
 test/*.html
+test/*.md
+test/*.json
+!test/*.ref.*
 # editor configuration files
 .vscode
