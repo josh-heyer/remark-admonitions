@@ -12,8 +12,8 @@ const colors = require("colors/safe");
 const remarkVersions = {
   "12": {
     toMarkdown: require("remark-stringify"),
-    markdown: require("remark-parse"),
-  },/*
+    markdown: require("remark-parse")
+  } /*
   "13": {
     toMarkdown: require("remark13-remark-stringify"),
     markdown: require("remark13-remark-parse"),
@@ -43,10 +43,14 @@ const diffVfile = (a, b) => {
           return text
             .trimEnd()
             .split("\n")
-            .map( (line, index, array) => index === 2 && index <= array.length-3
-              ? `...${array.length-4} more unchanged lines...`
-              : `  |${line}`)
-            .filter( (line, index, array) => index < 3 || index > array.length-3 )
+            .map((line, index, array) =>
+              index === 2 && index <= array.length - 3
+                ? `...${array.length - 4} more unchanged lines...`
+                : `  |${line}`
+            )
+            .filter(
+              (line, index, array) => index < 3 || index > array.length - 3
+            )
             .join("\n");
         }
       })
@@ -58,29 +62,29 @@ const diffVfile = (a, b) => {
 };
 
 const testHtml = (processor, filename) => {
-    let success = true;
-    processor.process(vfile.readSync("./test/sample.md"), (error, result) => {
-      console.error(report(error || result));
-      if (error) {
-        throw error;
+  let success = true;
+  processor.process(vfile.readSync("./test/sample.md"), (error, result) => {
+    console.error(report(error || result));
+    if (error) {
+      throw error;
+    }
+    if (result) {
+      result.basename = `${filename}.html`;
+      vfile.writeSync(result);
+      const ref = vfile.readSync(`./test/${filename}.ref.html`);
+      const { same, pretty } = diffVfile(result, ref);
+      if (same) {
+        console.log(
+          `${colors.red("Files do not match")} for ${filename} test.`
+        );
+        console.log(pretty);
+        success = false;
+      } else {
+        console.log(`${colors.green("Files match")} for ${filename} test.`);
       }
-      if (result) {
-        result.basename = `${filename}.html`;
-        vfile.writeSync(result);
-        const ref = vfile.readSync(`./test/${filename}.ref.html`);
-        const { same, pretty } = diffVfile(result, ref);
-        if (same) {
-          console.log(
-            `${colors.red("Files do not match")} for ${filename} test.`
-          );
-          console.log(pretty);
-          success = false;
-        } else {
-          console.log(`${colors.green("Files match")} for ${filename} test.`);
-        }
-      }
-    });
-    return success;
+    }
+  });
+  return success;
 };
 
 const testAst = (processor, filename) => {
@@ -106,34 +110,30 @@ const testAst = (processor, filename) => {
 const testMd = (processor, filename) => {
   let success = true;
   processor.process(vfile.readSync("./test/sample.md"), (error, result) => {
-      console.error(report(error || result));
-      if (error) {
-        throw error;
+    console.error(report(error || result));
+    if (error) {
+      throw error;
+    }
+    if (result) {
+      result.basename = `${filename}.md`;
+      vfile.writeSync(result);
+      const ref = vfile.readSync(`./test/${filename}.ref.md`);
+      const { same, pretty } = diffVfile(result, ref);
+      if (same) {
+        console.log(
+          `${colors.red("Files do not match")} for ${filename} MD test.`
+        );
+        console.log(pretty);
+        success = false;
+      } else {
+        console.log(`${colors.green("Files match")} for ${filename} MD test.`);
       }
-      if (result) {
-        result.basename = `${filename}.md`;
-        vfile.writeSync(result);
-        const ref = vfile.readSync(`./test/${filename}.ref.md`);
-        const { same, pretty } = diffVfile(result, ref);
-        if (same) {
-          console.log(
-            `${colors.red("Files do not match")} for ${filename} MD test.`
-          );
-          console.log(pretty);
-          success = false;
-        } else {
-          console.log(
-            `${colors.green("Files match")} for ${filename} MD test.`
-          );
-        }
-      }
-    });
-    return success;
+    }
+  });
+  return success;
 };
 
-
-const getProcessor = (options, remarkVersion, toHtml) =>
-{
+const getProcessor = (options, remarkVersion, toHtml) => {
   if (toHtml)
     return unified()
       .use(remarkVersion.markdown)
@@ -162,17 +162,27 @@ const pluginOptions = {
 const iconModes = ["svg", "emoji", "none"];
 
 let issues = [];
-for (let version of Object.getOwnPropertyNames(remarkVersions))
-{
+for (let version of Object.getOwnPropertyNames(remarkVersions)) {
   const remark = remarkVersions[version];
-  for (let icons of iconModes)
-  {
-    if (!testHtml(getProcessor({ ...pluginOptions, icons}, remark, true), icons))
-      issues.push(`HTML generation test failed for remark ${version} with ${icons} icons`)
-    if (!testAst(getProcessor({ ...pluginOptions, icons}, remark, false), icons))
-      issues.push(`AST generation test failed for remark ${version} with ${icons} icons`)
-    if (!testMd(getProcessor({ ...pluginOptions, icons}, remark, false), icons))
-      issues.push(`Markdown generation test failed for remark ${version} with ${icons} icons`)
+  for (let icons of iconModes) {
+    if (
+      !testHtml(getProcessor({ ...pluginOptions, icons }, remark, true), icons)
+    )
+      issues.push(
+        `HTML generation test failed for remark ${version} with ${icons} icons`
+      );
+    if (
+      !testAst(getProcessor({ ...pluginOptions, icons }, remark, false), icons)
+    )
+      issues.push(
+        `AST generation test failed for remark ${version} with ${icons} icons`
+      );
+    if (
+      !testMd(getProcessor({ ...pluginOptions, icons }, remark, false), icons)
+    )
+      issues.push(
+        `Markdown generation test failed for remark ${version} with ${icons} icons`
+      );
   }
 }
 
